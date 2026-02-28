@@ -10,9 +10,14 @@ def browser_init(context):
     """
     :param context: Behave context
     """
-    driver_path = ChromeDriverManager().install()
-    service = Service(driver_path)
-    context.driver = webdriver.Chrome(service=service)
+    ### CHROME / FIREFOX ###
+    context.driver = webdriver.Chrome()
+    # context.driver = webdriver.Firefox()
+
+    ### HEADLESS MODE ###
+    # options = webdriver.ChromeOptions()
+    # options.add_argument('headless')
+    # context.driver = webdriver.Chrome(options=options)
 
     chrome_options = Options()
     prefs = {"profile.default_content_setting_values.notifications": 2}
