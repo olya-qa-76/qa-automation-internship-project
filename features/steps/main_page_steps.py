@@ -1,6 +1,4 @@
-from pages.base_page import Page
 from behave import given, when, then
-from time import sleep
 
 
 @given('Open the main page')

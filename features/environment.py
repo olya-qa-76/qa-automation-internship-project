@@ -4,15 +4,21 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from app.application import Application
+from support.logger import logger
 
 
-def browser_init(context, scenario_name):
+def browser_init(context):
     """
     :param context: Behave context
     """
     ### CHROME / FIREFOX ###
-    # context.driver = webdriver.Chrome()
+    context.driver = webdriver.Chrome()
     # context.driver = webdriver.Firefox()
+
+    chrome_options = Options()
+    prefs = {"profile.default_content_setting_values.notifications": 2}
+    chrome_options.add_experimental_option("prefs", prefs)
+    context.driver = webdriver.Chrome(options=chrome_options)
 
     ### HEADLESS MODE ###
     # options = webdriver.ChromeOptions()
@@ -20,25 +26,21 @@ def browser_init(context, scenario_name):
     # context.driver = webdriver.Chrome(options=options)
 
     ### BROWSERSTACK ###
-    bs_user = 'olyaqaautomation_TImQYF'
-    bs_key = 'eQsmSjDX6v6KysdPxvkn'
+    # bs_user = 'olyaqaautomation_TImQYF'
+    # bs_key = 'eQsmSjDX6v6KysdPxvkn'
+    #
+    # url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
+    # options = Options()
+    # bstack_options = {
+    #     "os": "OS X",
+    #     "osVersion": "Tahoe",
+    #     "browserName": "Chrome",
+    #     "browserVersion": "latest",
+    #     "sessionName": scenario_name,
+    # }
+    # options.set_capability('bstack:options', bstack_options)
+    # context.driver = webdriver.Remote(command_executor=url, options=options)
 
-    url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
-    options = Options()
-    bstack_options = {
-        "os": "OS X",
-        "osVersion": "Tahoe",
-        "browserName": "Chrome",
-        "browserVersion": "latest",
-        "sessionName": scenario_name,
-    }
-    options.set_capability('bstack:options', bstack_options)
-    context.driver = webdriver.Remote(command_executor=url, options=options)
-
-    # chrome_options = Options()
-    # prefs = {"profile.default_content_setting_values.notifications": 2}
-    # chrome_options.add_experimental_option("prefs", prefs)
-    # context.driver = webdriver.Chrome(options=chrome_options)
 
     context.driver.maximize_window()
     context.driver.implicitly_wait(4)
@@ -48,16 +50,18 @@ def browser_init(context, scenario_name):
 
 def before_scenario(context, scenario):
     print('\nStarted scenario: ', scenario.name)
-    browser_init(context, scenario.name)
-
+    logger.info(f'\nStarted scenario: {scenario.name}')
+    browser_init(context)
 
 def before_step(context, step):
     print('\nStarted step: ', step)
+    logger.info(f'Started step: {step}')
 
 
 def after_step(context, step):
     if step.status == 'failed':
         print('\nStep failed: ', step)
+        logger.info(f'Step failed: {step}')
 
 
 def after_scenario(context, feature):
